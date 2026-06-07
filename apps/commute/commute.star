@@ -29,7 +29,6 @@ def get_eta(api_key):
         return None
 
     duration = element["duration_in_traffic"]["text"]
-
     cache.set("commute_eta", duration, ttl_seconds = 300)
     return duration
 
@@ -49,47 +48,81 @@ def main(config):
         )
 
     return render.Root(
-        child = render.Row(
-            expanded = True,
+        child = render.Stack(
             children = [
-                # Left side: route visual
-                render.Column(
-                    main_align = "center",
-                    cross_align = "center",
-                    children = [
-                        render.Circle(color = "#4285F4", diameter = 5),
-                        render.Box(width = 1, height = 4, color = "#555555"),
-                        render.Box(width = 1, height = 4, color = "#555555"),
-                        render.Box(width = 1, height = 4, color = "#555555"),
-                        render.Box(width = 1, height = 4, color = "#555555"),
-                        render.Circle(color = "#EA4335", diameter = 5),
-                    ],
+                # Dark map background
+                render.Box(
+                    width = 64,
+                    height = 32,
+                    color = "#1A1A2E",
                 ),
-                render.Box(width = 3),
-                # Right side: labels and time
-                render.Column(
-                    main_align = "center",
-                    cross_align = "start",
-                    expanded = True,
-                    children = [
-                        render.Text(
-                            content = "Home",
-                            font = "CG-pixel-3x5-mono",
-                            color = "#4285F4",
-                        ),
-                        render.Box(height = 2),
-                        render.Text(
-                            content = duration,
-                            font = "CG-pixel-4x5-mono",
-                            color = "#00CC44",
-                        ),
-                        render.Box(height = 2),
-                        render.Text(
-                            content = "Work",
-                            font = "CG-pixel-3x5-mono",
-                            color = "#EA4335",
-                        ),
-                    ],
+
+                # I-210 horizontal segment (top, going west)
+                render.Padding(
+                    pad = (4, 8, 0, 0),
+                    child = render.Box(
+                        width = 22,
+                        height = 2,
+                        color = "#4285F4",
+                    ),
+                ),
+
+                # I-110 connector going south
+                render.Padding(
+                    pad = (24, 8, 0, 0),
+                    child = render.Box(
+                        width = 2,
+                        height = 8,
+                        color = "#4285F4",
+                    ),
+                ),
+
+                # I-10 horizontal segment (going west to SM)
+                render.Padding(
+                    pad = (14, 14, 0, 0),
+                    child = render.Box(
+                        width = 22,
+                        height = 2,
+                        color = "#4285F4",
+                    ),
+                ),
+
+                # Home dot (Monrovia - top right of route)
+                render.Padding(
+                    pad = (2, 6, 0, 0),
+                    child = render.Circle(
+                        color = "#4285F4",
+                        diameter = 4,
+                    ),
+                ),
+
+                # Work dot (Santa Monica - end of I-10)
+                render.Padding(
+                    pad = (34, 12, 0, 0),
+                    child = render.Circle(
+                        color = "#EA4335",
+                        diameter = 4,
+                    ),
+                ),
+
+                # Duration text on right side
+                render.Padding(
+                    pad = (40, 4, 0, 0),
+                    child = render.Column(
+                        children = [
+                            render.Text(
+                                content = "DRIVE",
+                                font = "CG-pixel-3x5-mono",
+                                color = "#888888",
+                            ),
+                            render.Box(height = 2),
+                            render.Text(
+                                content = duration,
+                                font = "CG-pixel-3x5-mono",
+                                color = "#00CC44",
+                            ),
+                        ],
+                    ),
                 ),
             ],
         ),

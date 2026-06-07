@@ -51,7 +51,7 @@ def center_text(text, width):
     return (" " * left + text + " " * (pad - left))[:width]
 
 def prepare_clock_message(config):
-    now = time.now()
+    now = time.now().in_location("America/Los_Angeles")
     t_str = now.format("15:04" if config.bool("24h") else "3:04")
 
     line1 = now.format("Jan 02").upper()

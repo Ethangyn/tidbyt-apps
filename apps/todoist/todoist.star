@@ -45,34 +45,57 @@ def main(config):
             ),
         )
 
-    top = tasks[0]
+    # Sort by priority descending
+    sorted_tasks = []
     for task in tasks:
-        if task["priority"] > top["priority"]:
-            top = task
+        inserted = False
+        for i in range(len(sorted_tasks)):
+            if task["priority"] > sorted_tasks[i]["priority"]:
+                sorted_tasks.insert(i, task)
+                inserted = True
+                break
+        if not inserted:
+            sorted_tasks.append(task)
 
-    task_text = top["content"]
+    # Take top 3
+    top3 = sorted_tasks[:3]
+
+    task_rows = []
+    for task in top3:
+        name = task["content"]
+        if len(name) > 9:
+            name = name[:9] + ".."
+        task_rows.append(
+            render.Row(
+                cross_align = "center",
+                children = [
+                    render.Box(
+                        width = 6,
+                        height = 6,
+                        color = "#333333",
+                        child = render.Box(
+                            width = 4,
+                            height = 4,
+                            color = "#000000",
+                        ),
+                    ),
+                    render.Box(width = 2),
+                    render.Text(
+                        content = name,
+                        font = "CG-pixel-3x5-mono",
+                        color = "#FFFFFF",
+                    ),
+                ],
+            ),
+        )
+        task_rows.append(render.Box(height = 3))
 
     return render.Root(
         child = render.Column(
             expanded = True,
             main_align = "center",
-            cross_align = "center",
-            children = [
-                render.Text(
-                    content = "FOCUS",
-                    font = "CG-pixel-3x5-mono",
-                    color = "#E44332",
-                ),
-                render.Box(height = 3),
-                render.Marquee(
-                    width = 64,
-                    child = render.Text(
-                        content = task_text,
-                        font = "CG-pixel-3x5-mono",
-                        color = "#FFFFFF",
-                    ),
-                ),
-            ],
+            cross_align = "start",
+            children = task_rows,
         ),
     )
 

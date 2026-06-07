@@ -17,7 +17,7 @@ COLOR_MAP = {
     ">": "#FFFFFF",
 }
 COLS, ROWS = 7, 3
-TRANSITION_FRAMES, HOLD_FRAMES = 15, 45
+TRANSITION_FRAMES, HOLD_FRAMES = 50, 30
 CYCLE_FRAMES = TRANSITION_FRAMES + HOLD_FRAMES
 
 # --- UI Components ---
@@ -94,7 +94,7 @@ def main(config):
         elif reveal_type == "wave":
             delay = c * 5
         else:
-            delay = random.number(0, 5)
+            delay = random.number(0, 20)
 
         for _ in range(delay):
             flap_seqs[i].append(CHAR_SET[curr_idx])
@@ -102,7 +102,7 @@ def main(config):
         target_idx = CHAR_SET.find(target_char)
         if target_idx == -1:
             target_idx = 0
-        min_flips = 2
+        min_flips = 5
 
         flips = 0
         for _ in range(300):
@@ -130,7 +130,7 @@ def main(config):
             rows.append(render.Row(children = row_flaps))
         frames.append(render.Box(child = render.Column(children = rows)))
 
-    return render.Root(delay = 1000, child = render.Animation(children = frames))
+    return render.Root(child = render.Animation(children = frames))
 
 def get_schema():
     return schema.Schema(

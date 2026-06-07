@@ -41,7 +41,7 @@ def main(config):
     duration_secs = element["duration_in_traffic"]["value"]
 
     now = time.now().in_location("America/Los_Angeles")
-    arrival = now + time.second * duration_secs
+    arrival = now + time.parse_duration("{}s".format(duration_secs))
     arrival_str = arrival.format("3:04pm")
 
     return render.Root(
@@ -78,13 +78,13 @@ def get_schema():
             schema.Text(
                 id = "origin",
                 name = "Starting Address",
-                desc = "e.g. 2234 Rochelle Ave Monrovia CA",
+                desc = "e.g. 450 N Roxbury Dr Beverly Hills CA",
                 icon = "house",
             ),
             schema.Text(
                 id = "destination",
                 name = "Destination Address",
-                desc = "e.g. 1119 Colorado Ave Santa Monica CA",
+                desc = "e.g. 1600 Vine St Los Angeles CA",
                 icon = "briefcase",
             ),
         ],

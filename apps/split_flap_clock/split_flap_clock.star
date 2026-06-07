@@ -17,7 +17,7 @@ COLOR_MAP = {
     ">": "#FFFFFF",
 }
 COLS, ROWS = 7, 3
-TRANSITION_FRAMES, HOLD_FRAMES = 20, 15
+TRANSITION_FRAMES, HOLD_FRAMES = 30, 20
 CYCLE_FRAMES = TRANSITION_FRAMES + HOLD_FRAMES
 
 # --- UI Components ---
@@ -78,27 +78,13 @@ def main(config):
     target_message = prepare_clock_message(config)
 
     speed_map = {"fast": 1, "slow": 4, "medium": 2}
-    speed = speed_map.get(config.get("flip_speed", "medium"), 2)
-    reveal_type = config.get("reveal_type", "random")
+    speed = speed_map.get(config.get("flip_speed", "fast"), 1)
 
     flap_seqs = [[] for _ in range(COLS * ROWS)]
     for i in range(COLS * ROWS):
         target_char = target_message[i]
-        r, c = i // COLS, i % COLS
 
         curr_idx = random.number(0, len(CHAR_SET) - 1)
-
-        delay = 0
-        if reveal_type == "row":
-            delay = r * 10
-        elif reveal_type == "wave":
-            delay = c * 5
-        else:
-            delay = random.number(0, 20)
-
-        for _ in range(delay):
-            flap_seqs[i].append(CHAR_SET[curr_idx])
-
         target_idx = CHAR_SET.find(target_char)
         if target_idx == -1:
             target_idx = 0
@@ -143,7 +129,7 @@ def get_schema():
                 name = "Flip Speed",
                 desc = "Mechanical speed.",
                 icon = "gauge",
-                default = "medium",
+                default = "fast",
                 options = [schema.Option(display = "Fast", value = "fast"), schema.Option(display = "Medium", value = "medium"), schema.Option(display = "Slow", value = "slow")],
             ),
             schema.Dropdown(

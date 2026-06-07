@@ -12,7 +12,7 @@ def main(config):
         )
 
     resp = http.get(
-        "https://api.todoist.com/rest/v2/tasks?filter=today",
+        "https://api.todoist.com/rest/v2/tasks",
         headers = {"Authorization": "Bearer {}".format(api_key)},
     )
 

@@ -23,30 +23,35 @@ def main(config):
             child = render.Text("All done!", color = "#00CC44"),
         )
 
-    rows = []
-    for task in tasks:
-        name = task["content"]
+    def task_row(name):
         if len(name) > 10:
             name = name[:10] + ".."
-        rows.append(
-            render.Row(
-                cross_align = "center",
-                children = [
-                    render.Box(width = 5, height = 5, color = "#444444"),
-                    render.Box(width = 2),
-                    render.Text(
-                        content = name,
-                        font = "CG-pixel-3x5-mono",
-                        color = "#FFFFFF",
-                    ),
-                ],
-            ),
+        return render.Row(
+            cross_align = "center",
+            children = [
+                render.Box(width = 5, height = 5, color = "#444444"),
+                render.Box(width = 2),
+                render.Text(
+                    content = name,
+                    font = "CG-pixel-3x5-mono",
+                    color = "#FFFFFF",
+                ),
+            ],
         )
-        rows.append(render.Box(height = 2))
+
+    t1 = task_row(tasks[0]["content"])
+    t2 = task_row(tasks[1]["content"]) if len(tasks) > 1 else render.Box(height = 1)
+    t3 = task_row(tasks[2]["content"]) if len(tasks) > 2 else render.Box(height = 1)
 
     return render.Root(
         child = render.Column(
-            children = rows,
+            children = [
+                t1,
+                render.Box(height = 2),
+                t2,
+                render.Box(height = 2),
+                t3,
+            ],
         ),
     )
 

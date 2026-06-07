@@ -11,14 +11,67 @@ def main(config):
         )
 
     resp = http.get(
-        "https://api.todoist.com/rest/v2/tasks",
+        "https://api.todoist.com/api/v1/tasks?filter=today",
         headers = {"Authorization": "Bearer {}".format(api_key)},
     )
 
+    if resp.status_code != 200:
+        return render.Root(
+            child = render.Text("Err " + str(resp.status_code), color = "#FF0000"),
+        )
+
+    tasks = resp.json()
+
+    if not tasks:
+        return render.Root(
+            child = render.Column(
+                expanded = True,
+                main_align = "center",
+                cross_align = "center",
+                children = [
+                    render.Text(
+                        content = "FOCUS",
+                        font = "CG-pixel-3x5-mono",
+                        color = "#E44332",
+                    ),
+                    render.Box(height = 3),
+                    render.Text(
+                        content = "All done!",
+                        font = "CG-pixel-3x5-mono",
+                        color = "#00CC44",
+                    ),
+                ],
+            ),
+        )
+
+    top = tasks[0]
+    for task in tasks:
+        if task["priority"] > top["priority"]:
+            top = task
+
+    task_text = top["content"]
+
     return render.Root(
-        child = render.Text(
-            content = str(resp.status_code),
-            color = "#FFFFFF",
+        child = render.Column(
+            expanded = True,
+            main_align = "center",
+            cross_align = "center",
+            children = [
+                render.Text(
+                    content = "FOCUS",
+                    font = "CG-pixel-3x5-mono",
+                    color = "#E44332",
+                ),
+                render.Box(height = 3),
+                render.Marquee(
+                    width = 64,
+                    child = render.Text(
+                        content = task_text,
+                        font = "CG-pixel-3x5-mono",
+                        color = "#FFFFFF",
+                    ),
+                ),
+            ],
         ),
     )
 
@@ -29,7 +82,7 @@ def get_schema():
             schema.Text(
                 id = "api_key",
                 name = "Todoist API Token",
-                desc = "Your Todoist API token",
+                desc = "Your Todoist API token from settings",
                 icon = "key",
             ),
         ],

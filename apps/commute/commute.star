@@ -43,7 +43,6 @@ def main(config):
     now = time.now().in_location("America/Los_Angeles")
     arrival = now + time.parse_duration("{}s".format(duration_secs))
     arrival_str = arrival.format("3:04pm")
-    current_time_str = now.format("3:04pm")
 
     return render.Root(
         child = render.Column(
@@ -61,12 +60,6 @@ def main(config):
                     content = "ETA " + arrival_str,
                     font = "CG-pixel-3x5-mono",
                     color = "#00CC44",
-                ),
-                render.Box(height = 2),
-                render.Text(
-                    content = current_time_str,
-                    font = "tom-thumb",
-                    color = "#444444",
                 ),
             ],
         ),

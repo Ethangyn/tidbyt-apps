@@ -6,7 +6,7 @@ load("cache.star", "cache")
 load("time.star", "time")
 
 def get_eta(api_key, origin, destination):
-    cache_key = "commute_{}_{}_v5".format(origin, destination)
+    cache_key = "commute_{}_{}_v6".format(origin, destination)
     cached = cache.get(cache_key)
     if cached:
         parts = cached.split("|")
@@ -58,10 +58,6 @@ def main(config):
 
     duration, duration_secs = result
 
-    now = time.now().in_location("America/Los_Angeles")
-    arrival = now + time.second * duration_secs
-    arrival_str = arrival.format("3:04pm")
-
     frames = []
     for i in range(0, 55, 3):
         frames.append(
@@ -89,7 +85,7 @@ def main(config):
                                 main_align = "center",
                                 children = [
                                     render.Text(
-                                        content = duration + "  ETA " + arrival_str,
+                                        content = duration,
                                         font = "CG-pixel-3x5-mono",
                                         color = "#00CC44",
                                     ),
@@ -129,13 +125,13 @@ def get_schema():
             schema.Text(
                 id = "origin",
                 name = "Starting Address",
-                desc = "Your home address e.g. 123 Main St, Los Angeles CA",
+                desc = "Your home address e.g. 123 Main St Los Angeles CA",
                 icon = "house",
             ),
             schema.Text(
                 id = "destination",
                 name = "Destination Address",
-                desc = "Your work address e.g. 456 Office Blvd, Santa Monica CA",
+                desc = "Your work address e.g. 456 Office Blvd Santa Monica CA",
                 icon = "briefcase",
             ),
         ],

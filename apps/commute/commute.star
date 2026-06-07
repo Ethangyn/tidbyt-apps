@@ -6,16 +6,16 @@ load("cache.star", "cache")
 ORIGIN = "2234+Rochelle+Ave+Monrovia+CA+91016"
 DESTINATION = "1119+Colorado+Ave+Santa+Monica+CA"
 
-def get_color(duration_value):
-    if duration_value <= 45:
-        return "#00CC44"  # green - good
-    elif duration_value <= 70:
-        return "#FFAA00"  # yellow - moderate
+def get_color(duration_mins):
+    if duration_mins <= 45:
+        return "#00CC44"
+    elif duration_mins <= 70:
+        return "#FFAA00"
     else:
-        return "#FF3333"  # red - heavy traffic
+        return "#FF3333"
 
 def get_eta(api_key):
-    cached = cache.get("commute_eta_v2")
+    cached = cache.get("commute_eta_v3")
     if cached:
         parts = cached.split("|")
         return parts[0], parts[1], int(parts[2])
@@ -40,7 +40,7 @@ def get_eta(api_key):
     distance_text = element["distance"]["text"]
     duration_mins = element["duration_in_traffic"]["value"] // 60
 
-    cache.set("commute_eta_v2", "{}|{}|{}".format(duration_text, distance_text, duration_mins), ttl_seconds = 300)
+    cache.set("commute_eta_v3", "{}|{}|{}".format(duration_text, distance_text, duration_mins), ttl_seconds = 300)
     return duration_text, distance_text, duration_mins
 
 def main(config):
@@ -49,7 +49,7 @@ def main(config):
     if not api_key:
         return render.Root(
             child = render.Box(
-                render.Text("No API key", color = "#FF0000"),
+                child = render.Text("No API key", color = "#FF0000"),
             ),
         )
 
@@ -57,7 +57,7 @@ def main(config):
     if not result:
         return render.Root(
             child = render.Box(
-                render.Text("No data", color = "#FF0000"),
+                child = render.Text("No data", color = "#FF0000"),
             ),
         )
 
@@ -70,46 +70,11 @@ def main(config):
             main_align = "center",
             cross_align = "center",
             children = [
-                render.Row(
-                    cross_align = "center",
-                    children = [
-                        render.Text(
-                            content = "📍",
-                            font = "CG-pixel-3x5-mono",
-                        ),
-                        render.Box(width = 2),
-                        render.Text(
-                            content = "TO WORK",
-                            font = "CG-pixel-3x5-mono",
-                            color = "#4285F4",  # Google blue
-                        ),
-                    ],
+                render.Text(
+                    content = "TO WORK",
+                    font = "CG-pixel-3x5-mono",
+                    color = "#4285F4",
                 ),
                 render.Box(height = 3),
                 render.Text(
                     content = duration,
-                    font = "CG-pixel-4x5-mono",
-                    color = time_color,
-                ),
-                render.Box(height = 1),
-                render.Text(
-                    content = distance,
-                    font = "CG-pixel-3x5-mono",
-                    color = "#666666",
-                ),
-            ],
-        ),
-    )
-
-def get_schema():
-    return schema.Schema(
-        version = "1",
-        fields = [
-            schema.Text(
-                id = "api_key",
-                name = "Google Maps API Key",
-                desc = "Your Google Maps Distance Matrix API key",
-                icon = "key",
-            ),
-        ],
-    )

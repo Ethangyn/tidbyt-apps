@@ -116,7 +116,7 @@ def main(config):
             rows.append(render.Row(children = row_flaps))
         frames.append(render.Box(child = render.Column(children = rows)))
 
-    return render.Root(child = render.Animation(children = frames))
+    return render.Root(delay = 200, child = render.Animation(children = frames))
 
 def get_schema():
     return schema.Schema(

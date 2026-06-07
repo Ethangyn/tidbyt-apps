@@ -15,42 +15,63 @@ def main(config):
         headers = {"Authorization": "Bearer {}".format(api_key)},
     )
 
+    if resp.status_code != 200:
+        return render.Root(
+            child = render.Text("Err " + str(resp.status_code), color = "#FF0000"),
+        )
+
     data = resp.json()
-    tasks = data["results"][:3]
+    tasks = data["results"]
 
     if not tasks:
         return render.Root(
-            child = render.Text("All done!", color = "#00CC44"),
+            child = render.Column(
+                expanded = True,
+                main_align = "center",
+                cross_align = "center",
+                children = [
+                    render.Text(
+                        content = "FOCUS",
+                        font = "CG-pixel-3x5-mono",
+                        color = "#E44332",
+                    ),
+                    render.Box(height = 3),
+                    render.Text(
+                        content = "All done!",
+                        font = "CG-pixel-3x5-mono",
+                        color = "#00CC44",
+                    ),
+                ],
+            ),
         )
 
-    def task_row(name):
-        if len(name) > 10:
-            name = name[:10] + ".."
-        return render.Row(
-            cross_align = "center",
-            children = [
-                render.Box(width = 5, height = 5, color = "#444444"),
-                render.Box(width = 2),
-                render.Text(
-                    content = name,
-                    font = "CG-pixel-3x5-mono",
-                    color = "#FFFFFF",
-                ),
-            ],
-        )
+    top = tasks[0]
+    for task in tasks:
+        if task["priority"] > top["priority"]:
+            top = task
 
-    t1 = task_row(tasks[0]["content"])
-    t2 = task_row(tasks[1]["content"]) if len(tasks) > 1 else render.Box(height = 1)
-    t3 = task_row(tasks[2]["content"]) if len(tasks) > 2 else render.Box(height = 1)
+    task_text = top["content"]
 
     return render.Root(
         child = render.Column(
+            expanded = True,
+            main_align = "center",
+            cross_align = "center",
             children = [
-                t1,
-                render.Box(height = 2),
-                t2,
-                render.Box(height = 2),
-                t3,
+                render.Text(
+                    content = "FOCUS",
+                    font = "CG-pixel-3x5-mono",
+                    color = "#E44332",
+                ),
+                render.Box(height = 3),
+                render.Marquee(
+                    width = 64,
+                    child = render.Text(
+                        content = task_text,
+                        font = "CG-pixel-3x5-mono",
+                        color = "#FFFFFF",
+                    ),
+                ),
             ],
         ),
     )

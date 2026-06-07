@@ -1,6 +1,7 @@
 load("render.star", "render")
 load("http.star", "http")
 load("schema.star", "schema")
+load("time.star", "time")
 
 def main(config):
     api_key = config.get("api_key")
@@ -27,6 +28,11 @@ def main(config):
         )
 
     duration = element["duration_in_traffic"]["text"]
+    duration_secs = element["duration_in_traffic"]["value"]
+
+    now = time.now().in_location("America/Los_Angeles")
+    arrival = now + time.second * duration_secs
+    arrival_str = "ETA " + arrival.format("3:04pm")
 
     frames = []
     for i in range(0, 55, 3):
@@ -46,6 +52,12 @@ def main(config):
                         content = duration,
                         font = "CG-pixel-3x5-mono",
                         color = "#00CC44",
+                    ),
+                    render.Box(height = 1),
+                    render.Text(
+                        content = arrival_str,
+                        font = "CG-pixel-3x5-mono",
+                        color = "#FFAA00",
                     ),
                 ],
             ),

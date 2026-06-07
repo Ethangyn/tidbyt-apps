@@ -16,13 +16,37 @@ def main(config):
     )
 
     data = resp.json()
-    tasks = data["results"]
-    count = len(tasks)
+    tasks = data["results"][:3]
+
+    if not tasks:
+        return render.Root(
+            child = render.Text("All done!", color = "#00CC44"),
+        )
+
+    rows = []
+    for task in tasks:
+        name = task["content"]
+        if len(name) > 10:
+            name = name[:10] + ".."
+        rows.append(
+            render.Row(
+                cross_align = "center",
+                children = [
+                    render.Box(width = 5, height = 5, color = "#444444"),
+                    render.Box(width = 2),
+                    render.Text(
+                        content = name,
+                        font = "CG-pixel-3x5-mono",
+                        color = "#FFFFFF",
+                    ),
+                ],
+            ),
+        )
+        rows.append(render.Box(height = 2))
 
     return render.Root(
-        child = render.Text(
-            content = "tasks:" + str(count),
-            color = "#FFFFFF",
+        child = render.Column(
+            children = rows,
         ),
     )
 

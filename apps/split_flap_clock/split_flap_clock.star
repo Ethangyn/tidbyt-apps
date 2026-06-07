@@ -17,7 +17,7 @@ COLOR_MAP = {
     ">": "#FFFFFF",
 }
 COLS, ROWS = 7, 3
-TRANSITION_FRAMES, HOLD_FRAMES = 50, 30
+TRANSITION_FRAMES, HOLD_FRAMES = 150, 100
 CYCLE_FRAMES = TRANSITION_FRAMES + HOLD_FRAMES
 
 # --- UI Components ---
@@ -102,7 +102,7 @@ def main(config):
         target_idx = CHAR_SET.find(target_char)
         if target_idx == -1:
             target_idx = 0
-        min_flips = 5
+        min_flips = 15
 
         flips = 0
         for _ in range(300):

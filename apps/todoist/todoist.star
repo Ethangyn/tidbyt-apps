@@ -11,7 +11,7 @@ def main(config):
         )
 
     resp = http.get(
-        "https://api.todoist.com/api/v1/tasks?filter=today",
+        "https://api.todoist.com/api/v1/tasks?filter=next+7+days",
         headers = {"Authorization": "Bearer {}".format(api_key)},
     )
 
@@ -45,7 +45,6 @@ def main(config):
             ),
         )
 
-    # Just take first 3 tasks as-is
     top3 = tasks[:3]
 
     def task_row(name):

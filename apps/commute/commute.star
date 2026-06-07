@@ -3,6 +3,7 @@ load("http.star", "http")
 load("schema.star", "schema")
 load("encoding/json.star", "json")
 load("cache.star", "cache")
+load("animation.star", "animation")
 
 ORIGIN = "2234+Rochelle+Ave+Monrovia+CA+91016"
 DESTINATION = "1119+Colorado+Ave+Santa+Monica+CA"
@@ -32,6 +33,16 @@ def get_eta(api_key):
     cache.set("commute_eta", duration, ttl_seconds = 300)
     return duration
 
+def car_frame(position, color):
+    return render.Padding(
+        pad = (position, 12, 0, 0),
+        child = render.Box(
+            width = 5,
+            height = 3,
+            color = color,
+        ),
+    )
+
 def main(config):
     api_key = config.get("api_key")
 
@@ -47,84 +58,64 @@ def main(config):
             child = render.Text("No data", color = "#FF0000"),
         )
 
-    return render.Root(
-        child = render.Stack(
-            children = [
-                # Dark map background
-                render.Box(
-                    width = 64,
-                    height = 32,
-                    color = "#1A1A2E",
-                ),
-
-                # I-210 horizontal segment (top, going west)
-                render.Padding(
-                    pad = (4, 8, 0, 0),
-                    child = render.Box(
-                        width = 22,
-                        height = 2,
-                        color = "#4285F4",
-                    ),
-                ),
-
-                # I-110 connector going south
-                render.Padding(
-                    pad = (24, 8, 0, 0),
-                    child = render.Box(
-                        width = 2,
-                        height = 8,
-                        color = "#4285F4",
-                    ),
-                ),
-
-                # I-10 horizontal segment (going west to SM)
-                render.Padding(
-                    pad = (14, 14, 0, 0),
-                    child = render.Box(
-                        width = 22,
-                        height = 2,
-                        color = "#4285F4",
-                    ),
-                ),
-
-                # Home dot (Monrovia - top right of route)
-                render.Padding(
-                    pad = (2, 6, 0, 0),
-                    child = render.Circle(
-                        color = "#4285F4",
-                        diameter = 4,
-                    ),
-                ),
-
-                # Work dot (Santa Monica - end of I-10)
-                render.Padding(
-                    pad = (34, 12, 0, 0),
-                    child = render.Circle(
-                        color = "#EA4335",
-                        diameter = 4,
-                    ),
-                ),
-
-                # Duration text on right side
-                render.Padding(
-                    pad = (40, 4, 0, 0),
-                    child = render.Column(
+    # build animation frames — car moves from x=0 to x=54
+    frames = []
+    for i in range(0, 55, 3):
+        frames.append(
+            render.Stack(
+                children = [
+                    # background
+                    render.Column(
                         children = [
-                            render.Text(
-                                content = "DRIVE",
-                                font = "CG-pixel-3x5-mono",
-                                color = "#888888",
+                            # top: labels
+                            render.Row(
+                                expanded = True,
+                                main_align = "space_between",
+                                children = [
+                                    render.Text(
+                                        content = "HOME",
+                                        font = "CG-pixel-3x5-mono",
+                                        color = "#4285F4",
+                                    ),
+                                    render.Text(
+                                        content = "WORK",
+                                        font = "CG-pixel-3x5-mono",
+                                        color = "#EA4335",
+                                    ),
+                                ],
                             ),
-                            render.Box(height = 2),
-                            render.Text(
-                                content = duration,
-                                font = "CG-pixel-3x5-mono",
-                                color = "#00CC44",
+                            render.Box(height = 3),
+                            # road line
+                            render.Box(
+                                width = 64,
+                                height = 1,
+                                color = "#555555",
+                            ),
+                            render.Box(height = 6),
+                            # time at bottom
+                            render.Row(
+                                expanded = True,
+                                main_align = "center",
+                                children = [
+                                    render.Text(
+                                        content = duration,
+                                        font = "CG-pixel-4x5-mono",
+                                        color = "#00CC44",
+                                    ),
+                                ],
                             ),
                         ],
                     ),
-                ),
-            ],
+                    # animated car dot
+                    car_frame(i, "#FFCC00"),
+                ],
+            ),
+        )
+
+    return render.Root(
+        delay = 80,
+        child = render.Animation(
+            children = frames,
         ),
     )
 

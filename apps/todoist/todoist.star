@@ -45,12 +45,15 @@ def main(config):
             ),
         )
 
-    top = tasks[0]
-    for task in tasks:
-        if task["priority"] > top["priority"]:
-            top = task
+    # Sort by due date string (YYYY-MM-DD sorts correctly alphabetically)
+    def get_due(task):
+        due = task.get("due")
+        if due == None:
+            return "9999-99-99"
+        return due.get("date", "9999-99-99")
 
-    task_text = top["content"]
+    sorted_tasks = sorted(tasks, key = get_due)
+    task_text = sorted_tasks[0]["content"]
 
     return render.Root(
         child = render.Column(

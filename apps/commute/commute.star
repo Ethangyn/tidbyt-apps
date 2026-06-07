@@ -31,45 +31,21 @@ def main(config):
     frames = []
     for i in range(0, 55, 3):
         frames.append(
-            render.Stack(
+            render.Column(
+                expanded = True,
+                main_align = "center",
+                cross_align = "center",
                 children = [
-                    render.Column(
-                        expanded = True,
-                        main_align = "center",
-                        children = [
-                            render.Box(height = 1),
-                            render.Text(
-                                content = "COMMUTE",
-                                font = "CG-pixel-3x5-mono",
-                                color = "#4285F4",
-                            ),
-                            render.Box(height = 3),
-                            render.Box(
-                                width = 64,
-                                height = 1,
-                                color = "#444444",
-                            ),
-                            render.Box(height = 3),
-                            render.Row(
-                                expanded = True,
-                                main_align = "center",
-                                children = [
-                                    render.Text(
-                                        content = duration,
-                                        font = "CG-pixel-3x5-mono",
-                                        color = "#00CC44",
-                                    ),
-                                ],
-                            ),
-                        ],
+                    render.Text(
+                        content = "COMMUTE",
+                        font = "CG-pixel-3x5-mono",
+                        color = "#4285F4",
                     ),
-                    render.Padding(
-                        pad = (i, 10, 0, 0),
-                        child = render.Box(
-                            width = 5,
-                            height = 3,
-                            color = "#FFCC00",
-                        ),
+                    render.Box(height = 2),
+                    render.Text(
+                        content = duration,
+                        font = "CG-pixel-3x5-mono",
+                        color = "#00CC44",
                     ),
                 ],
             ),
@@ -89,3 +65,8 @@ def get_schema():
             schema.Text(
                 id = "api_key",
                 name = "Google Maps API Key",
+                desc = "Your API key",
+                icon = "key",
+            ),
+        ],
+    )

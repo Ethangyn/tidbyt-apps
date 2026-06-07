@@ -45,7 +45,6 @@ def main(config):
             ),
         )
 
-    # Sort by due date string (YYYY-MM-DD sorts correctly alphabetically)
     def get_due(task):
         due = task.get("due")
         if due == None:
@@ -53,7 +52,7 @@ def main(config):
         return due.get("date", "9999-99-99")
 
     sorted_tasks = sorted(tasks, key = get_due)
-    task_text = sorted_tasks[0]["content"]
+    task_text = sorted_tasks[0]["content"] + "          "
 
     return render.Root(
         child = render.Column(

@@ -28,45 +28,20 @@ def main(config):
 
     duration = element["duration_in_traffic"]["text"]
 
-    frames = []
-    for i in range(0, 55, 3):
-        frames.append(
-            render.Column(
-                expanded = True,
-                main_align = "center",
-                cross_align = "center",
-                children = [
-                    render.Text(
-                        content = "COMMUTE",
-                        font = "CG-pixel-3x5-mono",
-                        color = "#4285F4",
-                    ),
-                    render.Box(height = 2),
-                    render.Text(
-                        content = duration,
-                        font = "CG-pixel-3x5-mono",
-                        color = "#00CC44",
-                    ),
-                ],
-            ),
-        )
-
     return render.Root(
-        delay = 80,
-        child = render.Animation(
-            children = frames,
-        ),
-    )
-
-def get_schema():
-    return schema.Schema(
-        version = "1",
-        fields = [
-            schema.Text(
-                id = "api_key",
-                name = "Google Maps API Key",
-                desc = "Your API key",
-                icon = "key",
-            ),
-        ],
-    )
+        child = render.Column(
+            expanded = True,
+            main_align = "center",
+            cross_align = "center",
+            children = [
+                render.Text(
+                    content = "COMMUTE",
+                    font = "CG-pixel-3x5-mono",
+                    color = "#4285F4",
+                ),
+                render.Box(height = 2),
+                render.Box(
+                    width = 64,
+                    height = 1,
+                    color = "#444444",
+                ),

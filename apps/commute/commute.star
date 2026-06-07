@@ -28,8 +28,58 @@ def main(config):
 
     duration = element["duration_in_traffic"]["text"]
 
+    frames = []
+    for i in range(0, 55, 3):
+        frames.append(
+            render.Stack(
+                children = [
+                    render.Column(
+                        expanded = True,
+                        main_align = "center",
+                        children = [
+                            render.Box(height = 1),
+                            render.Text(
+                                content = "COMMUTE",
+                                font = "CG-pixel-3x5-mono",
+                                color = "#4285F4",
+                            ),
+                            render.Box(height = 3),
+                            render.Box(
+                                width = 64,
+                                height = 1,
+                                color = "#444444",
+                            ),
+                            render.Box(height = 3),
+                            render.Row(
+                                expanded = True,
+                                main_align = "center",
+                                children = [
+                                    render.Text(
+                                        content = duration,
+                                        font = "CG-pixel-3x5-mono",
+                                        color = "#00CC44",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                    render.Padding(
+                        pad = (i, 10, 0, 0),
+                        child = render.Box(
+                            width = 5,
+                            height = 3,
+                            color = "#FFCC00",
+                        ),
+                    ),
+                ],
+            ),
+        )
+
     return render.Root(
-        child = render.Text(duration, color = "#00CC44"),
+        delay = 80,
+        child = render.Animation(
+            children = frames,
+        ),
     )
 
 def get_schema():
@@ -39,8 +89,3 @@ def get_schema():
             schema.Text(
                 id = "api_key",
                 name = "Google Maps API Key",
-                desc = "Your API key",
-                icon = "key",
-            ),
-        ],
-    )

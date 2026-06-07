@@ -15,59 +15,14 @@ def main(config):
         headers = {"Authorization": "Bearer {}".format(api_key)},
     )
 
-    if resp.status_code != 200:
-        return render.Root(
-            child = render.Text("Err " + str(resp.status_code), color = "#FF0000"),
-        )
-
     data = resp.json()
     tasks = data["results"]
-
-    if not tasks:
-        return render.Root(
-            child = render.Column(
-                expanded = True,
-                main_align = "center",
-                cross_align = "center",
-                children = [
-                    render.Text(
-                        content = "All done!",
-                        font = "CG-pixel-3x5-mono",
-                        color = "#00CC44",
-                    ),
-                ],
-            ),
-        )
-
-    top3 = tasks[:3]
-
-    rows = []
-    for task in top3:
-        name = task["content"]
-        if len(name) > 10:
-            name = name[:10] + ".."
-        rows.append(
-            render.Row(
-                cross_align = "center",
-                children = [
-                    render.Box(width = 5, height = 5, color = "#444444"),
-                    render.Box(width = 2),
-                    render.Text(
-                        content = name,
-                        font = "CG-pixel-3x5-mono",
-                        color = "#FFFFFF",
-                    ),
-                ],
-            ),
-        )
-        rows.append(render.Box(height = 3))
+    count = len(tasks)
 
     return render.Root(
-        child = render.Padding(
-            pad = (2, 3, 0, 0),
-            child = render.Column(
-                children = rows,
-            ),
+        child = render.Text(
+            content = "tasks:" + str(count),
+            color = "#FFFFFF",
         ),
     )
 

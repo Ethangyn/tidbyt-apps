@@ -1,16 +1,24 @@
 load("render.star", "render")
 load("http.star", "http")
 load("schema.star", "schema")
-load("encoding/json.star", "json")
 load("cache.star", "cache")
 
 ORIGIN = "2234+Rochelle+Ave+Monrovia+CA+91016"
 DESTINATION = "1119+Colorado+Ave+Santa+Monica+CA"
 
+def get_color(duration_value):
+    if duration_value <= 45:
+        return "#00CC44"  # green - good
+    elif duration_value <= 70:
+        return "#FFAA00"  # yellow - moderate
+    else:
+        return "#FF3333"  # red - heavy traffic
+
 def get_eta(api_key):
-    cached = cache.get("commute_eta")
+    cached = cache.get("commute_eta_v2")
     if cached:
-        return cached
+        parts = cached.split("|")
+        return parts[0], parts[1], int(parts[2])
 
     url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={}&destinations={}&departure_time=now&traffic_model=best_guess&key={}".format(
         ORIGIN,
@@ -28,12 +36,12 @@ def get_eta(api_key):
     if element["status"] != "OK":
         return None
 
-    duration = element["duration_in_traffic"]["text"]
-    distance = element["distance"]["text"]
+    duration_text = element["duration_in_traffic"]["text"]
+    distance_text = element["distance"]["text"]
+    duration_mins = element["duration_in_traffic"]["value"] // 60
 
-    result = "{} | {}".format(duration, distance)
-    cache.set("commute_eta", result, ttl_seconds = 300)
-    return result
+    cache.set("commute_eta_v2", "{}|{}|{}".format(duration_text, distance_text, duration_mins), ttl_seconds = 300)
+    return duration_text, distance_text, duration_mins
 
 def main(config):
     api_key = config.get("api_key")
@@ -45,14 +53,16 @@ def main(config):
             ),
         )
 
-    eta = get_eta(api_key)
-
-    if not eta:
+    result = get_eta(api_key)
+    if not result:
         return render.Root(
             child = render.Box(
                 render.Text("No data", color = "#FF0000"),
             ),
         )
+
+    duration, distance, duration_mins = result
+    time_color = get_color(duration_mins)
 
     return render.Root(
         child = render.Column(
@@ -60,16 +70,32 @@ def main(config):
             main_align = "center",
             cross_align = "center",
             children = [
-                render.Text(
-                    content = "🚗 TO WORK",
-                    font = "tb-8",
-                    color = "#FFAA00",
+                render.Row(
+                    cross_align = "center",
+                    children = [
+                        render.Text(
+                            content = "📍",
+                            font = "CG-pixel-3x5-mono",
+                        ),
+                        render.Box(width = 2),
+                        render.Text(
+                            content = "TO WORK",
+                            font = "CG-pixel-3x5-mono",
+                            color = "#4285F4",  # Google blue
+                        ),
+                    ],
                 ),
-                render.Box(height = 2),
+                render.Box(height = 3),
                 render.Text(
-                    content = eta,
-                    font = "tb-8",
-                    color = "#FFFFFF",
+                    content = duration,
+                    font = "CG-pixel-4x5-mono",
+                    color = time_color,
+                ),
+                render.Box(height = 1),
+                render.Text(
+                    content = distance,
+                    font = "CG-pixel-3x5-mono",
+                    color = "#666666",
                 ),
             ],
         ),

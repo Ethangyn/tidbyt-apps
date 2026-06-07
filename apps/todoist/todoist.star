@@ -15,12 +15,23 @@ def main(config):
         headers = {"Authorization": "Bearer {}".format(api_key)},
     )
 
-    return render.Root(
-        child = render.Text(
-            content = str(resp.status_code),
-            color = "#FFFFFF",
-        ),
-    )
+    data = resp.json()
+
+    # Show what type the response is
+    if type(data) == "list":
+        count = str(len(data))
+        return render.Root(
+            child = render.Text("list:" + count, color = "#FFFFFF"),
+        )
+    elif type(data) == "dict":
+        keys = ",".join(data.keys()[:3])
+        return render.Root(
+            child = render.Text(keys, color = "#FFFFFF"),
+        )
+    else:
+        return render.Root(
+            child = render.Text("unknown", color = "#FF0000"),
+        )
 
 def get_schema():
     return schema.Schema(

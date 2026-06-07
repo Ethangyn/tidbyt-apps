@@ -29,57 +29,67 @@ def get_eta(api_key):
         return None
 
     duration = element["duration_in_traffic"]["text"]
-    distance = element["distance"]["text"]
 
-    result = "{} | {}".format(duration, distance)
-    cache.set("commute_eta", result, ttl_seconds = 300)
-    return result
+    cache.set("commute_eta", duration, ttl_seconds = 300)
+    return duration
 
 def main(config):
     api_key = config.get("api_key")
 
     if not api_key:
         return render.Root(
-            child = render.Box(
-                render.Text("No API key", color = "#FF0000"),
-            ),
+            child = render.Text("No API key", color = "#FF0000"),
         )
 
-    eta = get_eta(api_key)
+    duration = get_eta(api_key)
 
-    if not eta:
+    if not duration:
         return render.Root(
-            child = render.Box(
-                render.Text("No data", color = "#FF0000"),
-            ),
+            child = render.Text("No data", color = "#FF0000"),
         )
-
-    parts = eta.split(" | ")
-    duration = parts[0]
-    distance = parts[1] if len(parts) > 1 else ""
 
     return render.Root(
-        child = render.Column(
+        child = render.Row(
             expanded = True,
-            main_align = "center",
-            cross_align = "center",
             children = [
-                render.Text(
-                    content = "TO WORK",
-                    font = "CG-pixel-3x5-mono",
-                    color = "#4285F4",
+                # Left side: route visual
+                render.Column(
+                    main_align = "center",
+                    cross_align = "center",
+                    children = [
+                        render.Circle(color = "#4285F4", diameter = 5),
+                        render.Box(width = 1, height = 4, color = "#555555"),
+                        render.Box(width = 1, height = 4, color = "#555555"),
+                        render.Box(width = 1, height = 4, color = "#555555"),
+                        render.Box(width = 1, height = 4, color = "#555555"),
+                        render.Circle(color = "#EA4335", diameter = 5),
+                    ],
                 ),
-                render.Box(height = 2),
-                render.Text(
-                    content = duration,
-                    font = "CG-pixel-4x5-mono",
-                    color = "#00CC44",
-                ),
-                render.Box(height = 1),
-                render.Text(
-                    content = distance,
-                    font = "CG-pixel-3x5-mono",
-                    color = "#888888",
+                render.Box(width = 3),
+                # Right side: labels and time
+                render.Column(
+                    main_align = "center",
+                    cross_align = "start",
+                    expanded = True,
+                    children = [
+                        render.Text(
+                            content = "Home",
+                            font = "CG-pixel-3x5-mono",
+                            color = "#4285F4",
+                        ),
+                        render.Box(height = 2),
+                        render.Text(
+                            content = duration,
+                            font = "CG-pixel-4x5-mono",
+                            color = "#00CC44",
+                        ),
+                        render.Box(height = 2),
+                        render.Text(
+                            content = "Work",
+                            font = "CG-pixel-3x5-mono",
+                            color = "#EA4335",
+                        ),
+                    ],
                 ),
             ],
         ),

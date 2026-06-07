@@ -1,24 +1,16 @@
 load("render.star", "render")
 load("http.star", "http")
 load("schema.star", "schema")
+load("encoding/json.star", "json")
 load("cache.star", "cache")
 
 ORIGIN = "2234+Rochelle+Ave+Monrovia+CA+91016"
 DESTINATION = "1119+Colorado+Ave+Santa+Monica+CA"
 
-def get_color(duration_mins):
-    if duration_mins <= 45:
-        return "#00CC44"
-    elif duration_mins <= 70:
-        return "#FFAA00"
-    else:
-        return "#FF3333"
-
 def get_eta(api_key):
-    cached = cache.get("commute_eta_v3")
+    cached = cache.get("commute_eta")
     if cached:
-        parts = cached.split("|")
-        return parts[0], parts[1], int(parts[2])
+        return cached
 
     url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={}&destinations={}&departure_time=now&traffic_model=best_guess&key={}".format(
         ORIGIN,
@@ -36,12 +28,12 @@ def get_eta(api_key):
     if element["status"] != "OK":
         return None
 
-    duration_text = element["duration_in_traffic"]["text"]
-    distance_text = element["distance"]["text"]
-    duration_mins = element["duration_in_traffic"]["value"] // 60
+    duration = element["duration_in_traffic"]["text"]
+    distance = element["distance"]["text"]
 
-    cache.set("commute_eta_v3", "{}|{}|{}".format(duration_text, distance_text, duration_mins), ttl_seconds = 300)
-    return duration_text, distance_text, duration_mins
+    result = "{} | {}".format(duration, distance)
+    cache.set("commute_eta", result, ttl_seconds = 300)
+    return result
 
 def main(config):
     api_key = config.get("api_key")
@@ -49,20 +41,22 @@ def main(config):
     if not api_key:
         return render.Root(
             child = render.Box(
-                child = render.Text("No API key", color = "#FF0000"),
+                render.Text("No API key", color = "#FF0000"),
             ),
         )
 
-    result = get_eta(api_key)
-    if not result:
+    eta = get_eta(api_key)
+
+    if not eta:
         return render.Root(
             child = render.Box(
-                child = render.Text("No data", color = "#FF0000"),
+                render.Text("No data", color = "#FF0000"),
             ),
         )
 
-    duration, distance, duration_mins = result
-    time_color = get_color(duration_mins)
+    parts = eta.split(" | ")
+    duration = parts[0]
+    distance = parts[1] if len(parts) > 1 else ""
 
     return render.Root(
         child = render.Column(
@@ -75,6 +69,31 @@ def main(config):
                     font = "CG-pixel-3x5-mono",
                     color = "#4285F4",
                 ),
-                render.Box(height = 3),
+                render.Box(height = 2),
                 render.Text(
                     content = duration,
+                    font = "CG-pixel-4x5-mono",
+                    color = "#00CC44",
+                ),
+                render.Box(height = 1),
+                render.Text(
+                    content = distance,
+                    font = "CG-pixel-3x5-mono",
+                    color = "#888888",
+                ),
+            ],
+        ),
+    )
+
+def get_schema():
+    return schema.Schema(
+        version = "1",
+        fields = [
+            schema.Text(
+                id = "api_key",
+                name = "Google Maps API Key",
+                desc = "Your Google Maps Distance Matrix API key",
+                icon = "key",
+            ),
+        ],
+    )

@@ -43,6 +43,7 @@ def main(config):
     now = time.now().in_location("America/Los_Angeles")
     arrival = now + time.parse_duration("{}s".format(duration_secs))
     arrival_str = arrival.format("3:04pm")
+    current_time_str = now.format("3:04pm")
 
     return render.Root(
         child = render.Column(
@@ -50,10 +51,22 @@ def main(config):
             main_align = "center",
             cross_align = "center",
             children = [
-                render.Text(
-                    content = "COMMUTE",
-                    font = "CG-pixel-3x5-mono",
-                    color = "#4285F4",
+                render.Row(
+                    expanded = True,
+                    main_align = "space_between",
+                    cross_align = "center",
+                    children = [
+                        render.Text(
+                            content = "COMMUTE",
+                            font = "CG-pixel-3x5-mono",
+                            color = "#4285F4",
+                        ),
+                        render.Text(
+                            content = current_time_str,
+                            font = "CG-pixel-3x5-mono",
+                            color = "#555555",
+                        ),
+                    ],
                 ),
                 render.Box(height = 3),
                 render.Text(

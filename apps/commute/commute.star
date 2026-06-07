@@ -51,28 +51,22 @@ def main(config):
             main_align = "center",
             cross_align = "center",
             children = [
-                render.Row(
-                    expanded = True,
-                    main_align = "space_between",
-                    cross_align = "center",
-                    children = [
-                        render.Text(
-                            content = "COMMUTE",
-                            font = "CG-pixel-3x5-mono",
-                            color = "#4285F4",
-                        ),
-                        render.Text(
-                            content = current_time_str,
-                            font = "CG-pixel-3x5-mono",
-                            color = "#555555",
-                        ),
-                    ],
+                render.Text(
+                    content = "COMMUTE",
+                    font = "CG-pixel-3x5-mono",
+                    color = "#4285F4",
                 ),
                 render.Box(height = 3),
                 render.Text(
                     content = "ETA " + arrival_str,
                     font = "CG-pixel-3x5-mono",
                     color = "#00CC44",
+                ),
+                render.Box(height = 2),
+                render.Text(
+                    content = current_time_str,
+                    font = "tom-thumb",
+                    color = "#444444",
                 ),
             ],
         ),

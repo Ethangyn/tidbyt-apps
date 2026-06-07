@@ -15,10 +15,13 @@ def main(config):
     author = data[0]["a"]
 
     return render.Root(
+        delay = 150,
         child = render.Marquee(
             width = 64,
             height = 32,
             scroll_direction = "vertical",
+            offset_start = 32,
+            offset_end = 32,
             child = render.Column(
                 cross_align = "center",
                 children = [
@@ -28,14 +31,16 @@ def main(config):
                         font = "CG-pixel-3x5-mono",
                         color = "#FFFFFF",
                         align = "center",
+                        linespacing = 3,
                     ),
-                    render.Box(height = 4),
+                    render.Box(height = 8),
                     render.WrappedText(
                         content = "- " + author,
                         width = 60,
                         font = "CG-pixel-3x5-mono",
                         color = "#888888",
                         align = "center",
+                        linespacing = 3,
                     ),
                 ],
             ),

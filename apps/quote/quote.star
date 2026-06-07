@@ -12,17 +12,32 @@ def main(config):
 
     data = resp.json()
     quote = data[0]["q"]
+    author = data[0]["a"]
 
     return render.Root(
         child = render.Marquee(
             width = 64,
             height = 32,
             scroll_direction = "vertical",
-            child = render.WrappedText(
-                content = quote,
-                width = 64,
-                font = "CG-pixel-3x5-mono",
-                color = "#FFFFFF",
+            child = render.Column(
+                cross_align = "center",
+                children = [
+                    render.WrappedText(
+                        content = quote,
+                        width = 60,
+                        font = "CG-pixel-3x5-mono",
+                        color = "#FFFFFF",
+                        align = "center",
+                    ),
+                    render.Box(height = 4),
+                    render.WrappedText(
+                        content = "- " + author,
+                        width = 60,
+                        font = "CG-pixel-3x5-mono",
+                        color = "#888888",
+                        align = "center",
+                    ),
+                ],
             ),
         ),
     )
